@@ -1,15 +1,17 @@
 machine:
   environment:
     USERGOPATH: "/home/ubuntu/.go_workspace"
-    IMPORTPATH: "github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+    FORKEDFROM: "bitly"
+    IMPORTPATH: "github.com/$FORKEDFROM/$CIRCLE_PROJECT_REPONAME"
 
 dependencies:
   pre:
-    - go get github.com/tools/godep
+    - go get -u github.com/golang/dep/cmd/dep
     - bundle install --without development
   override:
     - mkdir -p "$USERGOPATH/src/$IMPORTPATH"
     - rsync -avzC --include='.git' --delete ./ "$USERGOPATH/src/$IMPORTPATH/"
+    - cd "$USERGOPATH/src/$IMPORTPATH/" && dep ensure
 
 test:
   override:
